@@ -15,17 +15,42 @@ datasource db {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
+  id        String    @id // This will store Clerk's userId (e.g. "user_abc123")
+  username  String?   // Optional: can be synced from Clerk
+  chats     ChatMember[]
+  messages  Message[]
+  createdAt DateTime  @default(now())
 }
 
-model Post {
-  id        Int     @id @default(autoincrement())
-  title     String
-  content   String?
-  published Boolean @default(false)
-  authorId  Int
-  author    User    @relation(fields: [authorId], references: [id])
+model Chat {
+  id        String        @id @default(uuid())
+  name      String?       // Optional for group chats
+  isGroup   Boolean        // true = group chat, false = 1-1 chat
+  members   ChatMember[]
+  messages  Message[]
+  createdAt DateTime      @default(now())
+}
+
+model ChatMember {
+  id        String   @id @default(uuid())
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  chatId    String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  joinedAt  DateTime @default(now())
+
+  @@unique([chatId, userId]) // Prevent duplicate members
+}
+
+model Message {
+  id         String    @id @default(uuid())
+  sender     User      @relation(fields: [senderId], references: [id])
+  senderId   String
+  chat       Chat      @relation(fields: [chatId], references: [id])
+  chatId     String
+  content    String?   // Text message
+  imageUrl   String?   // For image messages
+  videoUrl   String?   // For video messages
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
