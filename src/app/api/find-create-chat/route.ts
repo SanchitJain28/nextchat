@@ -1,8 +1,10 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
+import {  auth } from '@clerk/nextjs/server'
 
 export async function POST(req: NextRequest) {
   const params = req.nextUrl.searchParams;
+  const { userId } = await auth()
   // const { userId } = await auth();
   // if (!userId) {
   //   return NextResponse.json(
@@ -13,7 +15,7 @@ export async function POST(req: NextRequest) {
   //     { status: 401 }
   //   );
   // }
-  const testUserID = "user_2virDZHPMaoKhMLoZcYPFUFX2vb";
+  // const testUserID = "user_2virDZHPMaoKhMLoZcYPFUFX2vb";
   try {
     //search user in database
     const user = await prisma.user.findFirst({
@@ -34,28 +36,43 @@ export async function POST(req: NextRequest) {
     //if user exists
 
     //check if coversation exists
-    const chatExists = await prisma.chat.findFirst({
+    if (!userId) {
+      return NextResponse.json(
+        {
+          status: false,
+          message: "User ID is null or not authenticated",
+        },
+        { status: 401 }
+      );
+    }
+    console.log(userId)
+
+    const chat = await prisma.chat.findFirst({
       where: {
         isGroup: false,
         members: {
           every: {
-            userId: { in: [user.id, testUserID] },
+            userId: { in: [user.id, userId] },
           },
         },
       },
+      include: {
+        messages: true,
+      },
     });
-    if (chatExists) {
+    if (chat) {
       return NextResponse.json(
         {
           status: true,
-          message: "chat exists",
+          message: "chat already exists",
+          chat,
         },
         { status: 201 }
       );
     }
 
     //create a new chat with chat members
-     await prisma.chat.create({
+    const newChat=  await prisma.chat.create({
       data: {
         isGroup: false,
         members: {
@@ -69,7 +86,7 @@ export async function POST(req: NextRequest) {
             },
             {
               // Link to the second user
-              userId: testUserID,
+              userId:userId,
               // Prisma automatically handles linking the 'chatId'
               // 'joinedAt' will use the default value
             },
@@ -81,7 +98,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         status: true,
-        message: "chat created",
+        message: "new chat created",
+        chat:newChat,
       },
       { status: 201 }
     );

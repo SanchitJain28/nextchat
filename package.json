@@ -15,7 +15,9 @@
   "dependencies": {
     "@clerk/nextjs": "^6.14.3",
     "@prisma/extension-accelerate": "^1.3.0",
+    "axios": "^1.8.4",
     "localtunnel": "^2.0.2",
+    "lucide-react": "^0.488.0",
     "next": "15.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
