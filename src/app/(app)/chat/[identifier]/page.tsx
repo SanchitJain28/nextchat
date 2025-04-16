@@ -4,7 +4,9 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import axios from "axios";
 import { useAuth } from "@clerk/nextjs";
-import { SendHorizontal } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { MessageForm } from "../../Schemmas/message";
 
 interface Message {
   chatId: string;
@@ -20,10 +22,20 @@ interface Message {
 export default function Chat() {
   const { userId } = useAuth();
   const params = useParams<{ identifier: string }>();
-  const [content, setContent] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [messages, setMessages] = useState<Message[] | []>([]);
   const [chatId, setChatId] = useState<string>("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<{ content: string; image?: File }>({
+    resolver: zodResolver(MessageForm),
+  });
+
   const getOrCreateChat = async () => {
     setLoading(true);
     try {
@@ -43,16 +55,44 @@ export default function Chat() {
     }
   };
 
-  const sendMessage = async () => {
+  const sendMessage = async (data: { content: string; image?: File }) => {
     try {
-      const response = await axios.post(`/api/send-message?chatId=${chatId}`, {
-        content,
-      });
-      console.log(response);
+      console.log(data);
+      setMessages([
+        ...messages,
+        {
+          content: data.content,
+          senderId: userId || "unknown", // Fallback to "unknown" if userId is null or undefined
+          chatId: chatId,
+          id: "as",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ]);
+
+      // const response = await axios.post(`/api/send-message?chatId=${chatId}`, formData,{
+      //   headers:{
+      //     "Content-Type":"multipart/form-data"
+      //   }
+      // });
+      // console.log(response);
     } catch (error) {
       console.log(error);
     }
   };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files ? event.target.files[0] : null;
+    if (file) {
+      setImageFile(file);
+      const previewUrl = URL.createObjectURL(file);
+      setPreview(previewUrl);
+    } else {
+      setImageFile(null);
+      setPreview(null);
+    }
+  };
+
   useEffect(() => {
     getOrCreateChat();
   }, []);
@@ -83,19 +123,36 @@ export default function Chat() {
               </p>
             );
           })}
-          <label htmlFor="messageInput" className="sr-only">
-            Message
-          </label>
+
           <div className="flex border mx-4 rounded-xl px-2 py-4 justify-between">
-            <input
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              id="messageInput"
-              type="text"
-              className="focus:otline-none active:outline-none"
-              title="Message input"
-            />
-            <button onClick={sendMessage}><SendHorizontal size={34}/>{""}</button>
+            <form onSubmit={handleSubmit(sendMessage)}>
+              <div className="">
+                <label htmlFor="messageInput" className="sr-only">
+                  Message
+                </label>
+                <input
+                  {...register("content")}
+                  id="messageInput"
+                  type="text"
+                  className="focus:otline-none active:outline-none"
+                  title="Message input"
+                />
+              </div>
+
+              <div className="">
+                <label htmlFor="image"></label>
+                <input
+                  onChange={handleFileChange}
+                  id="image"
+                  type="file"
+                  className=""
+                  title="Image upload"
+                />
+              </div>
+
+              <p className="text-red-800 text-lg">{errors.content?.message}</p>
+              <input type="submit" value="send" />
+            </form>
           </div>
         </div>
       </p>
