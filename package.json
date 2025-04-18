@@ -2,10 +2,7 @@
   "name": "nextchat",
   "version": "0.1.0",
   "private": true,
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
-  },
-  "scripts": {
+ "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
