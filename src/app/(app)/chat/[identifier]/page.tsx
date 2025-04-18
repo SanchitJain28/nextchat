@@ -23,7 +23,7 @@ export default function Chat() {
       const {
         data: { chat },
       } = response;
-      setMessages(chat.messages);
+      setMessages(chat.messages?chat.messages:[]);
       setChatId(chat.id);
     } catch (error) {
       console.log(error);

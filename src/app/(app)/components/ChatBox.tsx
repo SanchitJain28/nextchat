@@ -42,8 +42,8 @@ export default function ChatBox({
 }) {
   const { userId } = useAuth();
   //   const params = useParams<{ identifier: string }>();
-  const [preview, setPreview] = useState<string | null>(null);
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  // const [preview, setPreview] = useState<string | null>(null);
+  // const [imageFile, setImageFile] = useState<File | null>(null);
 
   const processedData = data.map(msg => ({
     ...msg,
@@ -52,7 +52,7 @@ export default function ChatBox({
   const [messages, setMessages] = useState<Message[] | [] | fakeMessage[]>(
     processedData
   );
-  const [loading, setLoading] = useState<boolean>(false);
+  // const [loading, setLoading] = useState<boolean>(false);
   const [lastTempId, setLastTempId] = useState<string | null>(null);
 
   const {
@@ -99,12 +99,12 @@ export default function ChatBox({
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
     if (file) {
-      setImageFile(file);
-      const previewUrl = URL.createObjectURL(file);
-      setPreview(previewUrl);
+      // setImageFile(file);
+      // const previewUrl = URL.createObjectURL(file);
+      // setPreview(previewUrl);
     } else {
-      setImageFile(null);
-      setPreview(null);
+      // setImageFile(null);
+      // setPreview(null);
     }
   };
 
@@ -139,13 +139,13 @@ export default function ChatBox({
     });
   });
 
-  if (loading) {
-    return (
-      <div className="">
-        <p className="text-5xl">Loading</p>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="">
+  //       <p className="text-5xl">Loading</p>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div>

@@ -18,7 +18,7 @@ cloudinary.config({
 
 
 export async function POST(req: NextRequest) {
-  const { content,imageURL } = await req.json();
+  const { content } = await req.json();
   const params = req.nextUrl.searchParams;
   const { userId } = await auth();
 
