@@ -9,8 +9,7 @@ import {
 } from "@clerk/nextjs";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AblyProvider } from "ably/react";
-import { ablyClient } from "@/lib/ably";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
