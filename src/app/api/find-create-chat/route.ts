@@ -27,9 +27,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           status: false,
-          message: "User not found on our app",
+          message: "User not found on our app"
         },
-        { status: 401 }
+        { status: 403 }
       );
     }
 

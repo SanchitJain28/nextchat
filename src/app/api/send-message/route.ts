@@ -18,14 +18,12 @@ cloudinary.config({
 
 
 export async function POST(req: NextRequest) {
-  const { content } = await req.json();
+  const { content ,imageUrl} = await req.json();
+  console.log(imageUrl)
   const params = req.nextUrl.searchParams;
   const { userId } = await auth();
 
   const chatId = params.get("chatId")
-    ? params.get("chatId")
-    : "faa8a802-dbf9-4cfe-b183-b5e1953a3b73";
-
   if (!chatId) {
     return NextResponse.json(
       {
@@ -52,6 +50,7 @@ export async function POST(req: NextRequest) {
           content,
           chatId,
           senderId: userId,
+          imageUrl
         },
       });
       return NextResponse.json(
