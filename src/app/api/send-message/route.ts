@@ -1,29 +1,14 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { v2 as cloudinary } from "cloudinary";
-
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
 
 export async function POST(req: NextRequest) {
-  const { content ,imageUrl} = await req.json();
-  console.log(imageUrl)
+  const { content, imageUrl } = await req.json();
+  console.log(imageUrl);
   const params = req.nextUrl.searchParams;
   const { userId } = await auth();
 
-  const chatId = params.get("chatId")
+  const chatId = params.get("chatId");
   if (!chatId) {
     return NextResponse.json(
       {
@@ -41,34 +26,46 @@ export async function POST(req: NextRequest) {
       },
       { status: 401 }
     );
-  } 
-  
+  }
 
-    try {
-      const newMessage = await prisma.message.create({
-        data: {
-          content,
-          chatId,
-          senderId: userId,
-          imageUrl
-        },
-      });
-      return NextResponse.json(
-        {
-          status: true,
-          message: "message sent",
-          newMessage,
-        },
-        { status: 201 }
-      );
-    } catch (error) {
-      console.log(error);
-      return NextResponse.json(
-        {
-          status: false,
-          message: "Internal servor occured",
-        },
-        { status: 500 }
-      );
-    }
+  try {
+    const newMessage = await prisma.message.create({
+      data: {
+        content,
+        chatId,
+        senderId: userId,
+        imageUrl,
+      },
+    });
+
+    let lastMessageText = "";
+    if (content) lastMessageText = content;
+    else if (imageUrl) lastMessageText = "📷 Image";
+    else lastMessageText = "New message";
+
+    // Update the chat's last_message field
+    await prisma.chat.update({
+      where: { id: chatId },
+      data:{
+        last_message:lastMessageText
+      },
+    });
+    return NextResponse.json(
+      {
+        status: true,
+        message: "message sent",
+        newMessage,
+      },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json(
+      {
+        status: false,
+        message: "Internal servor occured",
+      },
+      { status: 500 }
+    );
+  }
 }

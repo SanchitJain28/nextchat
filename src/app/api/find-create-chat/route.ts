@@ -5,17 +5,6 @@ import {  auth } from '@clerk/nextjs/server'
 export async function POST(req: NextRequest) {
   const params = req.nextUrl.searchParams;
   const { userId } = await auth()
-  // const { userId } = await auth();
-  // if (!userId) {
-  //   return NextResponse.json(
-  //     {
-  //       status: false,
-  //       message: "Not authenticated",
-  //     },
-  //     { status: 401 }
-  //   );
-  // }
-  // const testUserID = "user_2virDZHPMaoKhMLoZcYPFUFX2vb";
   try {
     //search user in database
     const user = await prisma.user.findFirst({

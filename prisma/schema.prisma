@@ -23,12 +23,13 @@ model User {
 }
 
 model Chat {
-  id        String        @id @default(uuid())
-  name      String?       // Optional for group chats
-  isGroup   Boolean        // true = group chat, false = 1-1 chat
-  members   ChatMember[]
-  messages  Message[]
-  createdAt DateTime      @default(now())
+  id           String        @id @default(uuid())
+  name         String?
+  isGroup      Boolean
+  members      ChatMember[]
+  messages     Message[]
+  createdAt    DateTime      @default(now())
+  last_message String?       // Optional last message shown in chat list
 }
 
 model ChatMember {

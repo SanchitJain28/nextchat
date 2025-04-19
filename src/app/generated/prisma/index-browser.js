@@ -127,7 +127,8 @@ exports.Prisma.ChatScalarFieldEnum = {
   id: 'id',
   name: 'name',
   isGroup: 'isGroup',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  last_message: 'last_message'
 };
 
 exports.Prisma.ChatMemberScalarFieldEnum = {
