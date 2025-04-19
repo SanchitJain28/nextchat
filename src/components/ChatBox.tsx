@@ -95,10 +95,12 @@ export default function ChatBox({
         imageUrl,
         // Pass the tempId to the server
       });
+      setImageFile(null)
       sendChatMessage(response.data.newMessage, tempId);
       console.log(response);
     } catch (error) {
       console.log(error);
+      setImageFile(null) 
       setMessages((prevMessages) =>
         prevMessages.map((msg) =>
           msg.tempId === lastTempId ? { ...msg, status: "error" } : msg
@@ -119,7 +121,10 @@ export default function ChatBox({
   };
 
   const uploadImageToCloudinary = async (id: string) => {
-    if (!imageFile) return null;
+    if (!imageFile) {
+      return null
+    }
+    console.log(imageFile)
     setUploadingMessageId(id);
     const formData = new FormData();
     formData.append("file", imageFile);
