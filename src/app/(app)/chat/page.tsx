@@ -41,7 +41,7 @@ export default function Chats() {
       <div className="flex flex-col h-screen max-w-3xl mx-auto bg-background">
         <SearchBox />
 
-        <ScrollArea>
+        <ScrollArea className="mx-2">
           {chats.map((chat) => {
             return (
               <Link
